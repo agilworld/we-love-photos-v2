@@ -1,0 +1,21 @@
+{
+  "name": "we-love-photos-app",
+  "version": "2.0.0",
+  "private": true,
+  "description": "We Love Photos - Monorepo with pnpm and Turborepo",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "dev:web": "turbo dev --filter=@welovephotos/web",
+    "dev:server": "turbo dev --filter=@welovephotos/server"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "turbo": "^2.4.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

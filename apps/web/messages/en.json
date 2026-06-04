@@ -1,0 +1,5 @@
+{
+    "Home":{
+        "photos":"{count, plural, =0 {No photos yet}, =1 {One photo}}"
+    }
+}
