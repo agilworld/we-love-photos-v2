@@ -3,7 +3,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Version](https://img.shields.io/badge/version-2.0.0-brightgreen.svg)
 ![Node](https://img.shields.io/badge/node-%3E%3D20.0.0-green.svg)
-![pnpm](https://img.shields.io/badge/pnpm-9.15.0-red.svg)
+![pnpm](https://img.shields.io/badge/pnpm-11.5.1-red.svg)
 
 > A photo search and AI background removal platform built with Next.js, Hono.js, Turso DB, and Transformers.js.
 
@@ -44,14 +44,14 @@ we-love-photos-app/
 
 ## Tech Stack
 
-| Workspace | Technology |
-|-----------|-----------|
-| **Root** | pnpm 9.15.0, Turborepo 2.4.0 |
-| **apps/web** | Next.js 15, React 19, TypeScript 5, Tailwind CSS, Shadcn/UI, Zustand, TanStack Query, Transformers.js (AI), Sentry |
-| **apps/server** | Hono.js 4.6, TypeScript 5, Zod, @hono/node-server |
-| **packages/db** | Drizzle ORM 0.36.4, @libsql/client 0.14.0 |
-| **packages/validators** | Zod 3.24.1 |
-| **packages/utils** | clsx, tailwind-merge |
+| Workspace               | Technology                                                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Root**                | pnpm 11.5.1, Turborepo 2.4.0                                                                                       |
+| **apps/web**            | Next.js 15, React 19, TypeScript 5, Tailwind CSS, Shadcn/UI, Zustand, TanStack Query, Transformers.js (AI), Sentry |
+| **apps/server**         | Hono.js 4.6, TypeScript 5, Zod, @hono/node-server                                                                  |
+| **packages/db**         | Drizzle ORM 0.36.4, @libsql/client 0.14.0                                                                          |
+| **packages/validators** | Zod 3.24.1                                                                                                         |
+| **packages/utils**      | clsx, tailwind-merge                                                                                               |
 
 ---
 
@@ -60,7 +60,7 @@ we-love-photos-app/
 ### Prerequisites
 
 - Node.js >= 20.0.0
-- pnpm >= 9.15.0 (install: `npm install -g pnpm`)
+- pnpm >= 11.5.1 (install: `npm install -g pnpm`)
 
 ### Installation
 
@@ -135,14 +135,17 @@ pnpm build
 **Endpoint**: `GET /v1/api/search?keyword={string}`
 
 **Query Parameters**:
+
 - `keyword` (required, string, 1-200 chars) — Search keyword (e.g., "nature", "beach", "city")
 
 **Example Request**:
+
 ```bash
 curl "http://localhost:3010/v1/api/search?keyword=nature"
 ```
 
 **Success Response** (200):
+
 ```json
 {
   "success": true,
@@ -171,6 +174,7 @@ curl "http://localhost:3010/v1/api/search?keyword=nature"
 ```
 
 **Error Response** (400):
+
 ```json
 {
   "success": false,
@@ -266,12 +270,12 @@ packages/utils/
 
 The server follows clean DDD architecture with clear separation of layers:
 
-| Layer | File | Responsibility |
-|-------|------|----------------|
-| **Model** | `photo.model.ts` | TypeScript interfaces/types for Photo domain |
-| **Schema** | `photo.schema.ts` | Zod validation schemas for runtime validation |
-| **Repository** | `photo.repository.ts` | Pure data access — Drizzle ORM queries, no business logic |
-| **Service** | `photo.service.ts` | Business logic — orchestrates repo calls, transforms data |
+| Layer          | File                  | Responsibility                                               |
+| -------------- | --------------------- | ------------------------------------------------------------ |
+| **Model**      | `photo.model.ts`      | TypeScript interfaces/types for Photo domain                 |
+| **Schema**     | `photo.schema.ts`     | Zod validation schemas for runtime validation                |
+| **Repository** | `photo.repository.ts` | Pure data access — Drizzle ORM queries, no business logic    |
+| **Service**    | `photo.service.ts`    | Business logic — orchestrates repo calls, transforms data    |
 | **Controller** | `photo.controller.ts` | HTTP layer — parses request, calls service, returns response |
 
 ### Flow Example (Search by Keyword)
@@ -293,13 +297,13 @@ The server connects to a Turso database hosting the Unsplash Lite dataset.
 
 **Tables** (5 total):
 
-| Table | Primary Key | Description |
-|-------|-------------|-------------|
-| `unsplash_photos` | `photo_id` | Photo metadata (dimensions, photographer, location, AI descriptions, blur hash) |
-| `unsplash_keywords` | `(photo_id, keyword)` | Keyword-photo relationships with AI confidence scores |
-| `unsplash_collections` | `(photo_id, collection_id)` | Collection-photo relationships |
-| `unsplash_conversions` | — | Conversion tracking (downloads, clicks) |
-| `unsplash_colors` | `(photo_id, hex)` | Color data per photo |
+| Table                  | Primary Key                 | Description                                                                     |
+| ---------------------- | --------------------------- | ------------------------------------------------------------------------------- |
+| `unsplash_photos`      | `photo_id`                  | Photo metadata (dimensions, photographer, location, AI descriptions, blur hash) |
+| `unsplash_keywords`    | `(photo_id, keyword)`       | Keyword-photo relationships with AI confidence scores                           |
+| `unsplash_collections` | `(photo_id, collection_id)` | Collection-photo relationships                                                  |
+| `unsplash_conversions` | —                           | Conversion tracking (downloads, clicks)                                         |
+| `unsplash_colors`      | `(photo_id, hex)`           | Color data per photo                                                            |
 
 Full schema definition: [`data/create_table.sql`](data/create_table.sql)
 
@@ -307,19 +311,19 @@ Full schema definition: [`data/create_table.sql`](data/create_table.sql)
 
 ## Environment Variables
 
-| Variable | Workspace | Description | Default |
-|----------|-----------|-------------|---------|
-| `PORT` | server | API server port | 3010 |
-| `TURSO_CONNECTION_URL` | server | Turso database URL | — |
-| `TURSO_AUTH_TOKEN` | server | Turso authentication token | — |
-| `TURSO_ORG` | server | Turso organization name | agilworld |
-| `CORS_ORIGIN` | server | Allowed CORS origin | http://localhost:3000 |
-| `NEXT_PUBLIC_UNSPLASH_BASE_API` | web | Unsplash API base URL | — |
-| `NEXT_PUBLIC_UNSPLASH_CLIENT_KEY` | web | Unsplash API client key | — |
-| `NEXT_PUBLIC_PEXEL_BASE_API` | web | Pexel API base URL | — |
-| `NEXT_PUBLIC_PEXEL_CLIENT_KEY` | web | Pexel API client key | — |
-| `NEXT_PUBLIC_API_BASE_URL` | web | Local API server URL | http://localhost:3010 |
-| `VERCEL_OIDC_TOKEN` | web | Vercel OIDC token | — |
+| Variable                          | Workspace | Description                | Default               |
+| --------------------------------- | --------- | -------------------------- | --------------------- |
+| `PORT`                            | server    | API server port            | 3010                  |
+| `TURSO_CONNECTION_URL`            | server    | Turso database URL         | —                     |
+| `TURSO_AUTH_TOKEN`                | server    | Turso authentication token | —                     |
+| `TURSO_ORG`                       | server    | Turso organization name    | agilworld             |
+| `CORS_ORIGIN`                     | server    | Allowed CORS origin        | http://localhost:3000 |
+| `NEXT_PUBLIC_UNSPLASH_BASE_API`   | web       | Unsplash API base URL      | —                     |
+| `NEXT_PUBLIC_UNSPLASH_CLIENT_KEY` | web       | Unsplash API client key    | —                     |
+| `NEXT_PUBLIC_PEXEL_BASE_API`      | web       | Pexel API base URL         | —                     |
+| `NEXT_PUBLIC_PEXEL_CLIENT_KEY`    | web       | Pexel API client key       | —                     |
+| `NEXT_PUBLIC_API_BASE_URL`        | web       | Local API server URL       | http://localhost:3010 |
+| `VERCEL_OIDC_TOKEN`               | web       | Vercel OIDC token          | —                     |
 
 ---
 
@@ -334,6 +338,7 @@ The web app is configured for static export (`output: "export"`), suitable for d
 - **GitHub Pages** — Static hosting
 
 Build command:
+
 ```bash
 pnpm build
 ```
@@ -350,6 +355,7 @@ Deploy the server to any Node.js hosting platform:
 - **DigitalOcean App Platform** — Container or Node.js
 
 Build command:
+
 ```bash
 cd apps/server
 pnpm build
