@@ -51,6 +51,7 @@ next-env.d.ts
 
 # turbo
 .turbo
+.env
 
 # IDE
 .vscode/*
