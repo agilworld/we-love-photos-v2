@@ -1,4 +1,3 @@
-import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import "dotenv/config";
@@ -24,9 +23,9 @@ const port = parseInt(process.env.PORT || "3010", 10);
 
 console.log(`Server starting on port ${port}...`);
 
-serve({
+export default {
   fetch: app.fetch,
   port,
-});
+};
 
 console.log(`Server should be running on port ${port}`);
