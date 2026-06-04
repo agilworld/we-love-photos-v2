@@ -8,6 +8,9 @@
 /apps/*/.next
 /apps/*/.turbo
 /apps/*/build
+/packages/*/node_modules/
+/packages/*/dist
+/packages/*/.env
 /.pnp
 .pnp.*
 .yarn/*
