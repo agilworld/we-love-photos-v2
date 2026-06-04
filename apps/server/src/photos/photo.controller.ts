@@ -1,17 +1,17 @@
-import { Hono } from 'hono';
-import { PhotoService } from './photo.service';
-import { searchQuerySchema } from './photo.schema';
-import type { SearchResponse } from './photo.model';
+import { Hono } from "hono";
+import { PhotoService } from "./photo.service";
+import { searchQuerySchema } from "@welovephotos/validators";
+import type { SearchResponse } from "./photo.model";
 
 export const photoRoutes = new Hono();
 
-photoRoutes.get('/search', async c => {
-  const keyword = c.req.query('keyword');
+photoRoutes.get("/search", async (c) => {
+  const keyword = c.req.query("keyword");
 
   if (!keyword) {
     return c.json(
-      { success: false, error: 'keyword query parameter is required' },
-      400
+      { success: false, error: "keyword query parameter is required" },
+      400,
     );
   }
 
@@ -23,15 +23,12 @@ photoRoutes.get('/search', async c => {
   try {
     const service = new PhotoService();
     const result: SearchResponse = await service.searchByKeyword(
-      parsed.data.keyword
+      parsed.data.keyword,
     );
 
     return c.json({ success: true, data: result });
   } catch (error) {
-    console.error('Error searching photos:', error);
-    return c.json(
-      { success: false, error: 'Internal server error' },
-      500
-    );
+    console.error("Error searching photos:", error);
+    return c.json({ success: false, error: "Internal server error" }, 500);
   }
 });

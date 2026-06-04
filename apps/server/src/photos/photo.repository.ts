@@ -1,6 +1,6 @@
-import { db } from '@welovephotos/db';
-import { unsplashKeywords, unsplashPhotos } from '@welovephotos/db';
-import { like, inArray } from 'drizzle-orm';
+import { db } from "@welovephotos/db";
+import { unsplashKeywords, unsplashPhotos } from "@welovephotos/db";
+import { like, inArray } from "@welovephotos/db";
 
 export class PhotoRepository {
   async findPhotoIdsByKeyword(keyword: string): Promise<string[]> {
@@ -8,7 +8,7 @@ export class PhotoRepository {
       .select({ photoId: unsplashKeywords.photoId })
       .from(unsplashKeywords)
       .where(like(unsplashKeywords.keyword, `%${keyword}%`));
-    return [...new Set(rows.map(r => r.photoId))];
+    return [...new Set(rows.map((r) => r.photoId))];
   }
 
   async findPhotosByIds(photoIds: string[]) {
