@@ -1,5 +1,5 @@
-import { PhotoRepository } from './photo.repository';
-import type { SearchResponse, PhotoRow } from './photo.model';
+import { PhotoRepository } from "./photo.repository";
+import type { SearchResponse, PhotoRow, SearchRequest } from "./photo.model";
 
 export class PhotoService {
   private repo: PhotoRepository;
@@ -8,11 +8,16 @@ export class PhotoService {
     this.repo = new PhotoRepository();
   }
 
-  async searchByKeyword(keyword: string): Promise<SearchResponse> {
-    const photoIds = await this.repo.findPhotoIdsByKeyword(keyword);
-    const photos = await this.repo.findPhotosByIds(photoIds);
+  async searchByKeyword(request: SearchRequest): Promise<SearchResponse> {
+    const { keyword, limit = 20, offset = 0 } = request;
+    const photoIds = await this.repo.findPhotoIdsByKeyword(
+      keyword,
+      limit,
+      offset,
+    );
+    const photos = await this.repo.findPhotosByIds(photoIds, limit, offset);
 
-    const photoRows: PhotoRow[] = photos.map(photo => ({
+    const photoRows: PhotoRow[] = photos.map((photo) => ({
       photoId: photo.photoId,
       photoUrl: photo.photoUrl,
       photoImageUrl: photo.photoImageUrl,

@@ -37,3 +37,11 @@ export type SearchResponse = {
   total: number;
   photos: PhotoRow[];
 };
+
+export type SearchRequest = {
+  keyword: string;
+  limit: number;
+  offset: number;
+  order?: "relevant" | "latest";
+  filter: string;
+};
