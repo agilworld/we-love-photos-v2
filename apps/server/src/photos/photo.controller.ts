@@ -7,6 +7,8 @@ export const photoRoutes = new Hono();
 
 photoRoutes.get("/search", async (c) => {
   const keyword = c.req.query("keyword");
+  const limit = c.req.query("limit");
+  const offset = c.req.query("offset");
 
   if (!keyword) {
     return c.json(
@@ -15,16 +17,14 @@ photoRoutes.get("/search", async (c) => {
     );
   }
 
-  const parsed = searchQuerySchema.safeParse({ keyword });
+  const parsed = searchQuerySchema.safeParse({ keyword, limit, offset });
   if (!parsed.success) {
     return c.json({ success: false, error: parsed.error.flatten() }, 400);
   }
 
   try {
     const service = new PhotoService();
-    const result: SearchResponse = await service.searchByKeyword(
-      parsed.data.keyword,
-    );
+    const result: SearchResponse = await service.searchByKeyword(parsed.data);
 
     return c.json({ success: true, data: result });
   } catch (error) {
