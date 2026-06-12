@@ -7,6 +7,7 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
+    "test": "turbo test",
     "dev:web": "turbo dev --filter=@welovephotos/web",
     "dev:server": "turbo dev --filter=@welovephotos/server"
   },

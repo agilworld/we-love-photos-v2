@@ -1,2 +1,5 @@
 [install]
 frozen = true   # equivalent to --frozen-lockfile
+
+[test]
+coverage = false
