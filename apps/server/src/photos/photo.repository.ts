@@ -3,7 +3,11 @@ import { unsplashKeywords, unsplashPhotos } from "@welovephotos/db";
 import { like, inArray } from "@welovephotos/db";
 
 export class PhotoRepository {
-  async findPhotoIdsByKeyword(keyword: string, offset: number, limit: number): Promise<string[]> {
+  async findPhotoIdsByKeyword(
+    keyword: string,
+    limit: number,
+    offset: number,
+  ): Promise<string[]> {
     const rows = await db
       .select({ photoId: unsplashKeywords.photoId })
       .from(unsplashKeywords)
@@ -13,7 +17,7 @@ export class PhotoRepository {
     return [...new Set(rows.map((r) => r.photoId))];
   }
 
-  async findPhotosByIds(photoIds: string[], offset: number, limit: number) {
+  async findPhotosByIds(photoIds: string[], limit: number, offset: number) {
     if (photoIds.length === 0) return [];
     return db
       .select()
