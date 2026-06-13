@@ -70,6 +70,31 @@ export const chunk3dAdvanceByHeight = (arr: PhotoResult[]) => {
   return newArr;
 };
 
+export function masonryColumns<T extends { width: number; height: number }>(
+  items: T[],
+  columnCount: number,
+): T[][] {
+  if (columnCount < 1 || columnCount > 4) {
+    throw new Error("Column count must be between 1 and 4");
+  }
+
+  const columns: T[][] = Array.from({ length: columnCount }, () => []);
+  const heights = new Array(columnCount).fill(0);
+
+  const normalizeHeight = (item: T): number => {
+    if (!item.width || item.width === 0) return 1;
+    return item.height / item.width;
+  };
+
+  for (const item of items) {
+    const shortestColumnIndex = heights.indexOf(Math.min(...heights));
+    columns[shortestColumnIndex].push(item);
+    heights[shortestColumnIndex] += normalizeHeight(item);
+  }
+  console.log("columns", columns);
+  return columns;
+}
+
 const keys = (x: any) =>
   Object.getOwnPropertyNames(x).concat(
     Object.getOwnPropertyNames(x?.__proto__),

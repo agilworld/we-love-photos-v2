@@ -7,9 +7,9 @@ import Header from "../components/shared/Header";
 
 export default function Home() {
   return (
-    <div className="">
+    <div className="min-h-screen bg-slate-50">
       <Header />
-      <div className="container w-full md:w-4/6 mx-auto px-4">
+      <div className="container w-full md:w-4/6 mx-auto px-4 z-10">
         <Hero />
         <SearchBar />
         <Footer />

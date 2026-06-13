@@ -1,25 +1,25 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
 import { EColorProps, EOrientationProps, photosKeys } from "@/_types/photos";
-import { useEffect, useState, memo, useMemo, useRef, useCallback } from "react";
+import { useState, memo, useMemo, useCallback } from "react";
 import { searchQueryPhotos } from "@/libs/api";
-import { SearchPhotosParams } from "@/_types/photos";
 import useDebounce from "@/libs/hooks/useDebounce";
 import PhotoGridLoader from "@/features/search/component/PhotoGridLoader";
 import { PhotoResult } from "@/_types/photos";
 import PhotoGridItem, { PhotoDetailDrawer } from "./PhotoGridItem";
-import { usePhotoStore, useSearchOptionStore } from "./store/searchState";
+import { useSearchOptionStore } from "./store/searchState";
 import { useShallow } from "zustand/shallow";
 import { Badge } from "@/components/ui/badge";
 import { useFormatter } from "next-intl";
-import { chunk3dAdvanceByHeight, chunks2Arr } from "@/libs/utils";
+import { masonryColumns, chunks2Arr } from "@/libs/utils";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import MoveTopButton from "@/components/shared/MoveTop";
-import { isScreen } from "@/libs/media";
-import { track } from "@vercel/analytics";
 import { PhotoRepositoryList } from "@/libs/repository/photoRepository";
+import { useColumnCount } from "@/libs/hooks/useColumnCount";
+import { PhotoViewer } from "@/components/shared/PhotoViewer";
+import GridCols from "@/components/shared/GridCol";
 
 type PhotoGridProps = {
   keyword: string;
@@ -31,93 +31,90 @@ type PhotoGridMemoizedProps = {
   isSuccess: boolean;
   isMoredata: boolean;
   rows: PhotoResult[][];
+  columnCount: number;
+  allPhotos: PhotoResult[];
+  onPhotoClick: (item: PhotoResult) => void;
 };
 
 export default function PhotoGrid({ keyword }: PhotoGridProps) {
   const format = useFormatter();
-  const photoStore = useRef(usePhotoStore.getState().photos);
-  const { appendPhotos, clearPhotos, refreshPhotos } = usePhotoStore(
-    (state) => state,
-  );
-  const [pagenumber, setPagenumber] = useState<number>(1);
-  const [moreData, setMoreData] = useState<boolean>(false);
-  const resultQuery = useDebounce(keyword, 500);
+  const resultQuery = useDebounce(keyword, 300);
   const { color, orientation } = useSearchOptionStore(
     useShallow((state) => ({
       color: state.color,
       orientation: state.orientation,
     })),
   );
-  const params: SearchPhotosParams = {
-    query: resultQuery,
-    page: pagenumber,
-    per_page: 18,
-    color,
-    orientation,
-  };
-  const { query, page, per_page } = params;
-  const { data, isFetching, refetch, isSuccess, isFetched } =
-    useQuery<PhotoRepositoryList>({
-      queryKey: photosKeys.search(query, page, per_page, color, orientation),
-      queryFn: searchQueryPhotos,
-      enabled: false,
-      staleTime: 2000,
-    });
+  const perPage = 18;
+  const columnCount = useColumnCount();
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    return () => {
-      clearPhotos();
-    };
-  }, []);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    isFetched,
+    isSuccess,
+  } = useInfiniteQuery<PhotoRepositoryList>({
+    queryKey: photosKeys.search(
+      resultQuery,
+      undefined,
+      perPage,
+      color,
+      orientation,
+    ),
+    queryFn: ({ pageParam = 1 }) =>
+      searchQueryPhotos({
+        queryKey: photosKeys.search(
+          resultQuery,
+          pageParam as number,
+          perPage,
+          color,
+          orientation,
+        ),
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const currentPage = lastPage.page;
+      const totalPages = lastPage.total_pages;
+      return currentPage < totalPages ? currentPage + 1 : undefined;
+    },
+    enabled: resultQuery.length > 2,
+    staleTime: 60000,
+    placeholderData: keepPreviousData,
+  });
 
-  useEffect(() => {
-    usePhotoStore.subscribe((state) => (photoStore.current = state.photos));
-    if (pagenumber > 1 && data && data?.toJson().results.length > 0) {
-      appendPhotos(data.toJson().results as PhotoResult[]);
-    } else if (data?.results) {
-      refreshPhotos(data.toJson().results as PhotoResult[]);
-    }
-  }, [data, isFetched]);
-
-  useEffect(() => {
-    if (color || orientation) {
-      setPagenumber(1);
-    }
-    const timer = setTimeout(() => {
-      refetch();
-    }, 1000);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [resultQuery, color, orientation]);
-
-  useEffect(() => {
-    if (moreData && !isFetching && pagenumber > 1) {
-      refetch();
-    }
-  }, [pagenumber, moreData]);
-
-  useEffect(() => {
-    if (moreData && isFetched) {
-      setMoreData(false);
-    }
-  }, [moreData, isFetched]);
-
-  const hasNextPage =
-    pagenumber < (data?.toJson().total_pages as number) ? true : false;
+  const photos = useMemo(() => {
+    return data?.pages.flatMap((page) => page.results) ?? [];
+  }, [data]);
 
   const newFormData = useMemo(() => {
-    const newPhotos = photoStore.current;
-    if (newPhotos.length === 0) return [];
-    if (isScreen("md")) return chunks2Arr(newPhotos, 1);
-    return chunk3dAdvanceByHeight(newPhotos);
-  }, [photoStore.current, resultQuery]);
+    if (photos.length === 0) return [];
+    if (columnCount === 1) return chunks2Arr(photos, 1);
+    return masonryColumns(photos, columnCount);
+  }, [photos, columnCount]);
+
+  const handlePhotoClick = useCallback(
+    (item: PhotoResult) => {
+      const idx = photos.findIndex((p) => p.id === item.id);
+      if (idx !== -1) {
+        setViewerIndex(idx);
+      }
+    },
+    [photos],
+  );
 
   const handleNextPage = useCallback(() => {
-    setMoreData(true);
-    setPagenumber((prev) => prev + 1);
-  }, [moreData, setMoreData, setPagenumber]);
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const lastPage = data?.pages[data.pages.length - 1];
+  const totalPhotos = lastPage?.total ?? 0;
+  const totalPages = lastPage?.total_pages ?? 0;
 
   return (
     <>
@@ -129,12 +126,11 @@ export default function PhotoGrid({ keyword }: PhotoGridProps) {
           <div className="flex items-center">
             <div>
               Results:
-              {isFetched && data?.toJson().total ? (
+              {isFetched && totalPhotos ? (
                 <Badge variant={"secondary"}>
-                  {photoStore.current?.length} of{" "}
-                  {format.number(data?.toJson().total ?? 0)}
+                  {photos?.length} of {format.number(totalPhotos)}
                 </Badge>
-              ) : data?.toJson().total === 0 ? null : (
+              ) : totalPhotos === 0 ? null : (
                 <Skeleton className="w-12 inline-flex h-[10px] rounded-lg" />
               )}
             </div>
@@ -152,12 +148,11 @@ export default function PhotoGrid({ keyword }: PhotoGridProps) {
             )}
           </div>
           <div className="">
-            {isFetched && data?.toJson().total && data?.toJson().total > 0 ? (
+            {isFetched && totalPages && totalPages > 0 ? (
               <Badge variant={"secondary"}>
-                Page : {pagenumber} of{" "}
-                {format.number(data?.toJson().total_pages ?? 0)}
+                Page : {data?.pages.length} of {format.number(totalPages)}
               </Badge>
-            ) : data?.toJson().total === 0 ? null : (
+            ) : totalPhotos === 0 ? null : (
               <Skeleton className="w-12 h-[10px] rounded-lg" />
             )}
           </div>
@@ -168,9 +163,20 @@ export default function PhotoGrid({ keyword }: PhotoGridProps) {
         isFetching={isFetching}
         isFetched={isFetched}
         isSuccess={isSuccess}
-        isMoredata={moreData}
+        isMoredata={isFetchingNextPage}
         rows={newFormData as PhotoResult[][]}
+        columnCount={columnCount}
+        allPhotos={photos}
+        onPhotoClick={handlePhotoClick}
       />
+
+      {viewerIndex !== null && (
+        <PhotoViewer
+          photos={photos}
+          initialIndex={viewerIndex}
+          onClose={() => setViewerIndex(null)}
+        />
+      )}
 
       {isFetched && hasNextPage && (
         <div
@@ -180,14 +186,15 @@ export default function PhotoGrid({ keyword }: PhotoGridProps) {
           <Button
             size={"lg"}
             variant={"default"}
-            onClick={() => handleNextPage()}
+            onClick={handleNextPage}
+            disabled={isFetchingNextPage}
           >
-            Load more
+            {isFetchingNextPage ? "Loading..." : "Load more"}
           </Button>
         </div>
       )}
 
-      {photoStore.current?.length > 6 && <MoveTopButton />}
+      {photos.length > 6 && <MoveTopButton />}
     </>
   );
 }
@@ -197,15 +204,14 @@ function arePropsEqual(
   newProps: PhotoGridMemoizedProps,
 ) {
   return (
-    newProps.isFetched &&
     oldProps.isFetched === newProps.isFetched &&
-    newProps.isSuccess &&
     oldProps.isSuccess === newProps.isSuccess &&
     oldProps.rows.length === newProps.rows.length &&
     oldProps.rows.every((items, cdx) => {
       const newChunkItem = newProps.rows[cdx];
       return items.every((item, idx) => item.id === newChunkItem[idx]?.id);
-    })
+    }) &&
+    oldProps.onPhotoClick === newProps.onPhotoClick
   );
 }
 
@@ -214,32 +220,27 @@ const PhotoGridMemoized = memo(function PhotoGridResult({
   isFetched,
   isMoredata,
   rows,
+  columnCount,
+  onPhotoClick,
 }: PhotoGridMemoizedProps) {
   const [drawerState, setDrawerState] = useState<PhotoResult | null>(null);
   const onCloseDrawer = () => {
     setDrawerState(null);
   };
-
-  const onOpenDrawer = (item: PhotoResult) => {
-    track("View Image", {
-      id: item.id,
-      url: item.src?.medium ?? null,
-    });
-    setDrawerState(item);
-  };
-
   return (
     <div className="mt-10">
       {!isFetched && !isMoredata ? (
-        <PhotoGridLoader />
+        <PhotoGridLoader columnCount={columnCount} />
       ) : rows.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <GridCols colomnCount={columnCount}>
           {rows.map((items, chunkIdx) => (
             <div key={chunkIdx} className="flex flex-col gap-5">
               {items.map((item, idx) => (
                 <PhotoGridItem
                   key={item.id}
-                  onClick={() => onOpenDrawer(item)}
+                  onClick={() => {
+                    onPhotoClick(item);
+                  }}
                   onBlur={onCloseDrawer}
                   isFetching={isFetching}
                   isLast={idx === items.length - 1 && isMoredata}
@@ -248,7 +249,7 @@ const PhotoGridMemoized = memo(function PhotoGridResult({
               ))}
             </div>
           ))}
-        </div>
+        </GridCols>
       ) : isFetched && rows.length === 0 ? (
         <p
           className="text-center text-slate-700 

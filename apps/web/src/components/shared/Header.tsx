@@ -26,7 +26,7 @@ export default function Header(props: HeaderProps) {
   };
 
   return (
-    <div className="flex px-6 shadow-sm border-b border-gray-200 justify-between items-center text-xs text-gray-600 py-4">
+    <div className="flex px-6 shadow-sm border-b border-gray-200 bg-white justify-between items-center text-xs text-gray-600 py-4">
       <div className="flex items-center gap-3">
         {props.withBrand && (
           <Link href="/" className="flex items-center">

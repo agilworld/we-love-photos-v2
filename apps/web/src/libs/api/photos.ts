@@ -69,7 +69,7 @@ export async function pexelSearchPhotosApi(
   const [, query, page, per_page, color, orientation] = queryKey;
   let urlApi =
     process.env.NEXT_PUBLIC_PEXEL_BASE_API +
-    `search?query=${query}&page=${page}&per_page=${per_page}`;
+    `search?query=${query}&page=${page ?? 1}&per_page=${per_page ?? 18}`;
 
   if (color) {
     urlApi += `&color=${color}`;

@@ -37,7 +37,7 @@ export default function SearchBar() {
             type="text"
             placeholder="Type keyword e.g. tiger, laptop with desk"
             className="w-full md:text-xl text-xl shadow-lg 
-                            h-16 px-8 pl-16 pr-20 py-4"
+                            h-16 px-8 pl-16 pr-20 py-4 bg-white"
           />
           <SettingsOption />
         </div>

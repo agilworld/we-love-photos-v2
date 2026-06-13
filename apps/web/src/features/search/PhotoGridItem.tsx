@@ -1,8 +1,7 @@
 "use client";
 
 import { PhotoResult } from "@/_types/photos";
-import { useEffect, useState } from "react";
-import Image, { ImageLoaderProps } from "next/image";
+import { useState } from "react";
 import type { ComponentPropsWithRef } from "react";
 import {
   Drawer,
@@ -16,6 +15,8 @@ import { track } from "@vercel/analytics";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BlurHashImage } from "@/components/shared/BlurHashImage";
+import { Maximize2 } from "lucide-react";
 
 type PhotoGridItemProps = {
   item: Partial<PhotoResult>;
@@ -29,11 +30,18 @@ export default function PhotoGridItem({
   isLast,
   ...rest
 }: PhotoGridItemProps) {
+  const src = item.src?.medium ?? item.src?.small ?? "";
+
   return (
     <div key={item.id} className="cursor-pointer" {...rest}>
-      <img
-        className="h-auto max-w-full rounded-lg shadow-lg hover:scale-105 duration-200 delay-75	ease-in-out"
-        src={item.src?.medium}
+      <BlurHashImage
+        src={src}
+        alt={item.title ?? item.description ?? "photo"}
+        width={item.width || 400}
+        height={item.height || 300}
+        blurHash={item.blurHash}
+        color={item.color}
+        className="shadow-lg hover:scale-105 duration-200 delay-75 ease-in-out"
       />
       {isLast && isFetching && (
         <Skeleton className="w-full mt-10 h-[250px] rounded-lg" />
@@ -44,23 +52,16 @@ export default function PhotoGridItem({
 
 type PhotoDrawerProps = {
   item: PhotoResult;
+  onMaximize: () => void;
   onCloseDrawer: () => void;
-};
-
-const imageLoader = ({ src }: ImageLoaderProps) => {
-  return src;
 };
 
 export const PhotoDetailDrawer = ({
   item,
+  onMaximize,
   onCloseDrawer,
 }: PhotoDrawerProps) => {
   const [open, setOpen] = useState<boolean>(true);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleClose = () => {
     setOpen(false);
@@ -69,8 +70,6 @@ export const PhotoDetailDrawer = ({
       onCloseDrawer();
     }, 500);
   };
-
-  const editPhoto = () => {};
 
   const downloadPhoto = () => {
     if (item.src?.full) {
@@ -115,36 +114,42 @@ export const PhotoDetailDrawer = ({
 
   const desc = () => {
     return (
-      item.title?.slice(0, 100) ?? "" + (item.title?.length >= 100 ? "..." : "")
+      (item.title?.slice(0, 100) ?? "") +
+      (item.title && item.title.length >= 100 ? "..." : "")
     );
   };
 
   const altDesc = () => {
     return (
-      item.description?.slice(0, 100) ??
-      "" + (item.description?.length >= 100 ? "..." : "")
+      (item.description?.slice(0, 100) ?? "") +
+      (item.description && item.description.length >= 100 ? "..." : "")
     );
   };
+
+  const largeSrc = item.src?.large ?? "";
 
   return (
     <Drawer open={open} onClose={handleClose} onOpenChange={handleClose}>
       <DrawerContent>
         <div className="mx-auto w-full max-w-4xl md:py-6">
+          <button
+            onClick={onMaximize}
+            className="p-2 hover:bg-white/10 rounded-lg absolute right-3 top-3"
+            aria-label="Exit fullscreen"
+          >
+            <Maximize2 size={24} />
+          </button>
           <div className="flex flex-col md:flex-row justify-center">
             <div className="w-full md:w-4/6">
-              {item.src?.large && isClient && (
-                <Image
-                  src={item.src?.large}
+              {largeSrc && (
+                <BlurHashImage
+                  src={largeSrc}
                   alt={item.description}
-                  loader={imageLoader}
-                  style={{
-                    objectFit: "contain",
-                    resize: "horizontal",
-                  }}
-                  width={item.width / 5}
-                  height={item.height / 5}
-                  loading="lazy"
-                  className={`max-h-[80vh]`}
+                  width={item.width}
+                  height={item.height}
+                  blurHash={item.blurHash}
+                  color={item.color}
+                  className="max-h-[80vh]"
                 />
               )}
             </div>
@@ -189,7 +194,6 @@ export const PhotoDetailDrawer = ({
                   href={`/removebg?src=${item.src?.large}&w=${item.width}&h=${item.height}`}
                   target="_blank"
                   className="bg-blue-900 text-white text-center shadow-lg hover:bg-blue-800 py-2 px-4 rounded-md"
-                  onClick={editPhoto}
                 >
                   Remove Background
                 </a>

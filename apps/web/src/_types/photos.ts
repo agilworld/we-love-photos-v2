@@ -119,6 +119,7 @@ export type BasePhotoResult = {
   height: number;
   description: string;
   likes: number;
+  blurHash?: string;
 };
 
 export type PhotoResult = BasePhotoResult & {
@@ -128,6 +129,7 @@ export type PhotoResult = BasePhotoResult & {
   src: Partial<PhotoUrlTypes>;
   user: BasePhotoUserProps;
   from: string;
+  blurHash?: string;
 };
 
 export type PexelPhotoResult = BasePhotoResult & {

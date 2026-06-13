@@ -21,6 +21,7 @@ interface IPhotoRepository {
   description: string;
   src: Partial<PhotoUrlTypes>;
   user: BasePhotoUserProps;
+  blurHash?: string;
 }
 
 interface IPhotoRepositoryList {
@@ -42,6 +43,7 @@ export class PhotoRepository implements IPhotoRepository {
   src!: PhotoUrlTypes;
   user!: BasePhotoUserProps;
   color!: string;
+  blurHash?: string;
   getUser(): BasePhotoUserProps {
     return this.user;
   }
@@ -58,6 +60,7 @@ export class PhotoRepository implements IPhotoRepository {
       user: this.user,
       color: this.color,
       from: this.from,
+      blurHash: this.blurHash,
     };
   }
 }
@@ -162,6 +165,7 @@ export class PhotoRepositoryPexel extends PhotoRepository {
       name: this.args.photographer,
       portfolio_url: this.args.photographer_url,
     };
+    this.blurHash = undefined;
   }
 }
 
@@ -235,5 +239,6 @@ export class PhotoRepositoryServer extends PhotoRepository {
         .join(" "),
       portfolio_url: `https://unsplash.com/@` + this.args.photographerUsername,
     };
+    this.blurHash = this.args.blurHash ?? undefined;
   }
 }

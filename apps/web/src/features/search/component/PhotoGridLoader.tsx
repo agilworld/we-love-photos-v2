@@ -1,23 +1,17 @@
 import { Skeleton } from "../../../components/ui/skeleton";
 
-export default function PhotoGridLoader() {
+type PhotoGridLoaderProps = {
+  columnCount?: number;
+};
+
+export default function PhotoGridLoader({ columnCount = 3 }: PhotoGridLoaderProps) {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 my-10">
-      <div className="grid gap-3">
-        <Skeleton className="w-full h-[250px] rounded-lg" />
-      </div>
-
-      <div className="grid gap-3">
-        <div>
+    <div className={`grid grid-cols-${columnCount} gap-3 my-10`}>
+      {Array.from({ length: columnCount }).map((_, i) => (
+        <div key={i} className="grid gap-3">
           <Skeleton className="w-full h-[250px] rounded-lg" />
         </div>
-      </div>
-
-      <div className="grid gap-3">
-        <div>
-          <Skeleton className="w-full h-[250px] rounded-lg" />
-        </div>
-      </div>
+      ))}
     </div>
   );
 }

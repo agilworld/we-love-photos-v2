@@ -3,12 +3,17 @@
     {
       "version": "1.0",
       "date": "2024-12-10",
-      "items": ["Initial release"]
+      "items": [
+        "Initial release"
+      ]
     },
     {
       "version": "1.0.1",
       "date": "2024-12-17",
-      "items": ["Responsiveness mobile design", "Eslint fixing"]
+      "items": [
+        "Responsiveness mobile design",
+        "Eslint fixing"
+      ]
     },
     {
       "version": "1.1.0",
@@ -31,12 +36,27 @@
     {
       "version": "1.3.0",
       "date": "2024-12-27",
-      "items": ["Add Sentry logging", "Add analytics with Vercel"]
+      "items": [
+        "Add Sentry logging",
+        "Add analytics with Vercel"
+      ]
     },
     {
       "version": "1.4.0",
       "date": "2025-02-25",
-      "items": ["Feat: Remove Background AI tool"]
+      "items": [
+        "Feat: Remove Background AI tool"
+      ]
+    },
+    {
+      "version": "2.0.0",
+      "date": "2026-06-12",
+      "items": [
+        "Feat: New data source from unsplash",
+        "Feat: refactor and optimize photo grid system",
+        "Feat: photo viewwer display",
+        "Fix: bug fixes & wordings"
+      ]
     }
   ]
 }

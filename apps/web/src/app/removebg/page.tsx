@@ -21,9 +21,6 @@ export default function Page() {
             as machine processing, this page laverages machine learning models
             Transformers.js and ONNX runtime web to process media locally
           </p>
-          <p className="font-semibold text-sm underline underline-offset-2">
-            Next version: Enable upload your avatar and remove it!
-          </p>
         </div>
         <PhotoRemovalClientComponent />
         <Footer />
