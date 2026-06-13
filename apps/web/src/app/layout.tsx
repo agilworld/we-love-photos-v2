@@ -18,9 +18,10 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "We Love Photo | Open Source Project",
+  title:
+    "We Love Photos | Best Collection Photo from Pexel and Unsplash |Open Source Project",
   description:
-    "Dedication for who those love and search photos for collection or commercial project ",
+    "Dedication for who those love and search photos for collection or commercial project. Best Photo Aggregrator from Pexel and Unsplash",
   keywords: "photos, sharing photo, free photos, download photo, search photo",
 };
 
@@ -38,7 +39,9 @@ export default async function RootLayout({
       >
         <Providers locale={locale} messages={messages}>
           {children}
-          <Analytics mode={"production"} />
+          {process.env.NODE_ENV === "production" && (
+            <Analytics mode={"production"} />
+          )}
         </Providers>
       </body>
     </html>

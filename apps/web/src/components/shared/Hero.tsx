@@ -6,8 +6,12 @@ export default function Hero() {
       <Heart size={64} color="red" />
       <H2 className="mb-2">We Love Photos</H2>
       <H4 className="font-normal text-neutral-500">
-        Find photos and share what your love for free!
+        Best Collection photos from <span className="font-bold">Pexel</span> and{" "}
+        <span className="font-bold">Unsplash</span>
       </H4>
+      <p className="text-neutral-400">
+        Share what your love for free to family and friends
+      </p>
     </div>
   );
 }
