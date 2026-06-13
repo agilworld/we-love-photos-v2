@@ -6,6 +6,8 @@ import {
   PexelSearchPhotosProps,
   UnsplashSearchPhotosProps,
   PhotoResult,
+  ServerPhotoRow,
+  ServerSearchResponse,
 } from "@/_types/photos";
 import { chunk3dAdvanceByHeight, chunks2Arr, uniqueBy } from "../utils";
 
@@ -95,6 +97,21 @@ export class PhotoRepositoryList implements IPhotoRepositoryList {
     }
   }
 
+  setIteratorPhotoServer(args: ServerSearchResponse) {
+    try {
+      args.photos
+        .filter((item) => item.photoImageUrl !== null)
+        .map((item) => {
+          const objServer = new PhotoRepositoryServer(item);
+          this.results.push(objServer.toJson());
+        });
+      this.results = uniqueBy(this.results, (v: any) => v.id) as PhotoResult[];
+      this.total = (this.total ?? 0) + args.total;
+    } catch (error) {
+      console.log("error", error);
+    }
+  }
+
   splitToChunks(size: number = 2): PhotoResult[] {
     return chunks2Arr(this.results, size);
   }
@@ -179,6 +196,44 @@ export class PhotoRepositoryUnsplash extends PhotoRepository {
       name: this.args.user.name,
       portfolio_url: this.args.user.links?.html as string,
       avatar_url: this.args.user.profile_image?.small,
+    };
+  }
+}
+
+export class PhotoRepositoryServer extends PhotoRepository {
+  from = "server";
+  args: ServerPhotoRow;
+  constructor(args: ServerPhotoRow) {
+    super();
+    this.args = args;
+    this.binding();
+  }
+
+  private binding() {
+    const prefix = "server-";
+    this.url = this.args.photoUrl ?? "";
+    this.id = prefix + this.args.photoId;
+    this.width = this.args.photoWidth ?? 0;
+    this.height = this.args.photoHeight ?? 0;
+    this.color = "";
+    this.title = this.args.photoDescription ?? this.args.aiDescription ?? "";
+    this.description = this.args.aiDescription ?? "";
+    this.likes = 0;
+    this.from = "Unsplash";
+    this.src = {
+      raw: this.args.photoImageUrl ?? undefined,
+      full: this.args.photoImageUrl ?? undefined,
+      large: this.args.photoImageUrl ?? undefined,
+      medium: this.args.photoImageUrl ?? undefined,
+      small: this.args.photoImageUrl ?? undefined,
+      thumb: this.args.photoImageUrl ?? undefined,
+    };
+    this.user = {
+      id: this.args.photographerUsername ?? "",
+      name: [this.args.photographerFirstName, this.args.photographerLastName]
+        .filter(Boolean)
+        .join(" "),
+      portfolio_url: `https://unsplash.com/@` + this.args.photographerUsername,
     };
   }
 }

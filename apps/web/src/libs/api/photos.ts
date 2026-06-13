@@ -4,6 +4,7 @@ import {
   PexelSearchPhotosProps,
   photosKeys,
   UnsplashSearchPhotosProps,
+  ServerSearchResponse,
 } from "@/_types/photos";
 import { PhotoRepositoryList } from "@/libs/repository/photoRepository";
 export type QueryPhotosProps = QueryFunctionContext<
@@ -13,14 +14,27 @@ export type QueryPhotosProps = QueryFunctionContext<
 export const searchQueryPhotos: any = async ({
   queryKey,
 }: QueryPhotosProps): Promise<PhotoRepositoryList> => {
-  const [pexel] = await Promise.all([
-    //unsplashSearchPhotosApi(queryKey),
+  const [, query, page, per_page] = queryKey;
+
+  const [pexel, serverResult] = await Promise.allSettled([
     pexelSearchPhotosApi(queryKey),
+    serverSearchPhotosApi(
+      query ?? "",
+      per_page ?? 18,
+      ((page ?? 1) - 1) * (per_page ?? 18),
+    ),
   ]);
 
   const photoObjList = new PhotoRepositoryList();
-  photoObjList.setIteratorPhotoPexel(pexel);
-  //photoObjList.setIteratorPhotoUnsplash(unsplash);
+
+  if (pexel.status === "fulfilled") {
+    photoObjList.setIteratorPhotoPexel(pexel.value);
+  }
+
+  if (serverResult.status === "fulfilled") {
+    photoObjList.setIteratorPhotoServer(serverResult.value);
+  }
+
   return photoObjList;
 };
 
@@ -72,4 +86,34 @@ export async function pexelSearchPhotosApi(
   }
 
   return response.json();
+}
+
+export async function serverSearchPhotosApi(
+  keyword: string,
+  limit: number = 20,
+  offset: number = 0,
+): Promise<ServerSearchResponse> {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  if (!baseUrl) {
+    return { keyword, total: 0, photos: [] };
+  }
+
+  const urlApi = `${baseUrl}/v1/api/search?keyword=${encodeURIComponent(
+    keyword,
+  )}&limit=${limit}&offset=${offset}`;
+
+  const response = await fetch(urlApi);
+
+  if (!response.ok) {
+    throw new Error("Server search request failed");
+  }
+
+  const json = await response.json();
+
+  if (!json.success) {
+    throw new Error(json.error ?? "Server search returned error");
+  }
+
+  return json.data as ServerSearchResponse;
 }
