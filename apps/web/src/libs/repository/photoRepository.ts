@@ -217,8 +217,9 @@ export class PhotoRepositoryServer extends PhotoRepository {
     this.height = this.args.photoHeight ?? 0;
     this.color = "";
     this.title = this.args.photoDescription ?? this.args.aiDescription ?? "";
-    this.description = this.args.photoDescription ?? "";
+    this.description = this.args.aiDescription ?? "";
     this.likes = 0;
+    this.from = "Unsplash";
     this.src = {
       raw: this.args.photoImageUrl ?? undefined,
       full: this.args.photoImageUrl ?? undefined,
@@ -232,7 +233,7 @@ export class PhotoRepositoryServer extends PhotoRepository {
       name: [this.args.photographerFirstName, this.args.photographerLastName]
         .filter(Boolean)
         .join(" "),
-      portfolio_url: "",
+      portfolio_url: `https://unsplash.com/@` + this.args.photographerUsername,
     };
   }
 }
