@@ -4,13 +4,14 @@
   "private": true,
   "description": "Hono.js API server with DDD",
   "scripts": {
-    "dev": "bun --hot src/index.ts",
-    "build": "bun run build src/index.ts --outdir dist --minify --target bun",
+    "dev": "bun --hot src/serve.ts",
+    "build": "bun run build src/serve.ts --outdir dist --minify --target bun",
     "start": "bun run dist/index.js",
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit",
     "test": "bun test",
-    "test:watch": "bun test --watch"
+    "test:watch": "bun test --watch",
+    "vercel-build": "echo 'Build handled by Vercel function bundler'"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
