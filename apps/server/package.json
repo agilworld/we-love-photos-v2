@@ -13,7 +13,7 @@
     "test:watch": "bun test --watch",
     "vercel-build": "echo 'Build handled by Vercel function bundler'",
     "cf:build": "wrangler deploy --dry-run",
-    "cf:deploy": "wrangler deploy"
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",

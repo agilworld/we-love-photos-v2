@@ -9,7 +9,8 @@
     "lint": "turbo lint",
     "test": "turbo test",
     "dev:web": "turbo dev --filter=@welovephotos/web",
-    "dev:server": "turbo dev --filter=@welovephotos/server"
+    "dev:server": "turbo dev --filter=@welovephotos/server",
+    "build:server": "turbo build --filter=@welovephotos/server"
   },
   "devDependencies": {
     "tsx": "^4.19.2",
