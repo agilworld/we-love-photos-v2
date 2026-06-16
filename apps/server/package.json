@@ -20,7 +20,6 @@
     "@welovephotos/db": "workspace:*",
     "@welovephotos/utils": "workspace:*",
     "@welovephotos/validators": "workspace:*",
-    "dotenv": "^16.4.7",
     "hono": "^4.6.14"
   },
   "devDependencies": {

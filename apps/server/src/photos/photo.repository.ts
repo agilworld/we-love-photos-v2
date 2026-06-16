@@ -1,14 +1,24 @@
-import { db } from "@welovephotos/db";
-import { unsplashKeywords, unsplashPhotos } from "@welovephotos/db";
+import { createDb, unsplashKeywords, unsplashPhotos } from "@welovephotos/db";
 import { like, inArray } from "@welovephotos/db";
 
+type Env = {
+  TURSO_CONNECTION_URL: string;
+  TURSO_AUTH_TOKEN: string;
+};
+
 export class PhotoRepository {
+  private db: ReturnType<typeof createDb>;
+
+  constructor(env?: Env) {
+    this.db = env ? createDb(env) : createDb();
+  }
+
   async findPhotoIdsByKeyword(
     keyword: string,
     limit: number,
     offset: number,
   ): Promise<string[]> {
-    const rows = await db
+    const rows = await this.db
       .select({ photoId: unsplashKeywords.photoId })
       .from(unsplashKeywords)
       .offset(offset)
@@ -19,7 +29,7 @@ export class PhotoRepository {
 
   async findPhotosByIds(photoIds: string[], limit: number, offset: number) {
     if (photoIds.length === 0) return [];
-    return db
+    return this.db
       .select()
       .from(unsplashPhotos)
       .offset(offset)

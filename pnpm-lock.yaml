@@ -29,9 +29,6 @@ importers:
       '@welovephotos/validators':
         specifier: workspace:*
         version: link:../../packages/validators
-      dotenv:
-        specifier: ^16.4.7
-        version: 16.6.1
       hono:
         specifier: ^4.6.14
         version: 4.12.25
