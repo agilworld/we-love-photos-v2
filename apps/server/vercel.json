@@ -2,8 +2,14 @@
     "$schema": "https://openapi.vercel.sh/vercel.json",
     "bunVersion": "1.x",
     "functions": {
-        "api/[[...route]].ts": {
+        "api/index.ts": {
             "memory": 512
         }
-    }
+    },
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": "/api/index"
+        }
+    ]
 }

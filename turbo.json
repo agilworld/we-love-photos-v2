@@ -9,8 +9,15 @@
         ".next/**",
         "dist/**",
         "drizzle/**",
-        "!.next/cache/**"
+        "!.next/cache/**",
+        ".wrangler/**"
       ]
+    },
+    "deploy": {
+      "dependsOn": [
+        "build"
+      ],
+      "cache": false
     },
     "dev": {
       "cache": false,
@@ -22,7 +29,9 @@
       ]
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     }
   }
 }

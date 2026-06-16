@@ -19,4 +19,4 @@ app.get("/", (c) => {
   return c.json({ message: "We Love Photos API Server", status: "running" });
 });
 
-export { app };
+export default app;

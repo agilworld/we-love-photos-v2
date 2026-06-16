@@ -1,4 +1,4 @@
-import { app } from "./index";
+import app from "./index";
 
 const port = parseInt(process.env.PORT || "3010", 10);
 console.log(`Server starting on port ${port}...`);
