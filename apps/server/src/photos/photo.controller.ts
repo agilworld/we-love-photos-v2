@@ -3,7 +3,15 @@ import { PhotoService } from "./photo.service";
 import { searchQuerySchema } from "@welovephotos/validators";
 import type { SearchResponse } from "./photo.model";
 
-export const photoRoutes = new Hono();
+type Env = {
+  TURSO_CONNECTION_URL: string;
+  TURSO_AUTH_TOKEN: string;
+  TURSO_ORG?: string;
+  CORS_ORIGIN?: string;
+  NODE_ENV?: string;
+};
+
+export const photoRoutes = new Hono<{ Bindings: Env }>();
 
 photoRoutes.get("/search", async (c) => {
   const keyword = c.req.query("keyword");
@@ -23,7 +31,7 @@ photoRoutes.get("/search", async (c) => {
   }
 
   try {
-    const service = new PhotoService();
+    const service = new PhotoService(c.env);
     const result: SearchResponse = await service.searchByKeyword(parsed.data);
 
     return c.json({ success: true, data: result });

@@ -1,11 +1,16 @@
 import { PhotoRepository } from "./photo.repository";
 import type { SearchResponse, PhotoRow, SearchRequest } from "./photo.model";
 
+type Env = {
+  TURSO_CONNECTION_URL: string;
+  TURSO_AUTH_TOKEN: string;
+};
+
 export class PhotoService {
   private repo: PhotoRepository;
 
-  constructor() {
-    this.repo = new PhotoRepository();
+  constructor(env?: Env) {
+    this.repo = new PhotoRepository(env);
   }
 
   async searchByKeyword(request: SearchRequest): Promise<SearchResponse> {

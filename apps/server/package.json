@@ -4,20 +4,22 @@
   "private": true,
   "description": "Hono.js API server with DDD",
   "scripts": {
-    "dev": "bun --hot src/index.ts",
-    "build": "bun run build src/index.ts --outdir dist --minify --target bun",
+    "dev": "bun --hot src/serve.ts",
+    "build": "bun build ./src/index.ts --outdir=dist --minify --target=bun",
     "start": "bun run dist/index.js",
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit",
     "test": "bun test",
-    "test:watch": "bun test --watch"
+    "test:watch": "bun test --watch",
+    "vercel-build": "echo 'Build handled by Vercel function bundler'",
+    "cf:build": "wrangler deploy --dry-run",
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
     "@welovephotos/db": "workspace:*",
     "@welovephotos/utils": "workspace:*",
     "@welovephotos/validators": "workspace:*",
-    "dotenv": "^16.4.7",
     "hono": "^4.6.14"
   },
   "devDependencies": {
@@ -26,6 +28,7 @@
     "@typescript-eslint/parser": "^8.18.0",
     "eslint": "^8.57.1",
     "tsx": "^4.19.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.100.0"
   }
 }

@@ -1,14 +1,21 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import "dotenv/config";
 import { photoRoutes } from "./photos/photo.controller";
 
-const app = new Hono();
+type Env = {
+  TURSO_CONNECTION_URL: string;
+  TURSO_AUTH_TOKEN: string;
+  TURSO_ORG?: string;
+  CORS_ORIGIN?: string;
+  NODE_ENV?: string;
+};
+
+const app = new Hono<{ Bindings: Env }>();
 
 app.use(
   "*",
   cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    origin: (c) => c.env?.CORS_ORIGIN || "http://localhost:3012",
     allowMethods: ["GET", "POST", "OPTIONS"],
   }),
 );
@@ -19,13 +26,4 @@ app.get("/", (c) => {
   return c.json({ message: "We Love Photos API Server", status: "running" });
 });
 
-const port = parseInt(process.env.PORT || "3010", 10);
-
-console.log(`Server starting on port ${port}...`);
-
-export default {
-  fetch: app.fetch,
-  port,
-};
-
-console.log(`Server should be running on port ${port}`);
+export default app;

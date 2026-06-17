@@ -1,0 +1,16 @@
+name = "welovephotos-server"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+
+[vars]
+NODE_ENV = "production"
+TURSO_CONNECTION_URL = "libsql://unsplash-lite-agilworld.aws-ap-northeast-1.turso.io"
+TURSO_AUTH_TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJnaWQiOiJlMDMzMTQxNS05NTY4LTRhYzctOGNkZi0wY2UwNGM5NTIyYzEiLCJpYXQiOjE3ODAyMTUwMTksInJpZCI6IjY1MTQyY2JmLTBlOTYtNGFkZi1iYjA0LWFkMTg1ZjY0MmYzZSJ9.q-U594Pb8eYeBHeF5Sd8j0wTM67qwqaDJ7sFvTkc1V5lfFQZBKcGCxnQjvbT60hb5yJlnd8LdCQBbxeociS2DA"
+TURSO_ORG = "agilworld"
+CORS_ORIGIN = "https://welovephotos.dianragil.com"

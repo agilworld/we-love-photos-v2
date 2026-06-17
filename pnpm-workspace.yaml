@@ -2,9 +2,10 @@ packages:
   - "apps/*"
   - "packages/*"
 allowBuilds:
-  '@sentry/cli': true
+  "@sentry/cli": true
   esbuild: true
   onnxruntime-node: true
   protobufjs: true
   sharp: true
   unrs-resolver: true
+  workerd: true
