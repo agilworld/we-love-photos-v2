@@ -56,7 +56,7 @@ const nextConfig: NextConfig = {
 
 export default withSentryConfig(withNextIntl(nextConfig), {
   org: "qaki5-team",
-  project: "we-love-photos-v2",
+  project: "we-love-photos",
 
   // An auth token is required for uploading source maps.
   authToken: process.env.NEXT_PUBLIC_SENTRY_AUTH_TOKEN,
