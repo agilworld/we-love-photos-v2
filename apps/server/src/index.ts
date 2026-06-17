@@ -15,7 +15,7 @@ const app = new Hono<{ Bindings: Env }>();
 app.use(
   "*",
   cors({
-    origin: (c) => c.env?.CORS_ORIGIN || "http://localhost:3012",
+    origin: (c) => c.env?.CORS_ORIGIN || "https://welovephotos.dianragil.com",
     allowMethods: ["GET", "POST", "OPTIONS"],
   }),
 );
