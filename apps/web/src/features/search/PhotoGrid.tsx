@@ -260,7 +260,11 @@ const PhotoGridMemoized = memo(function PhotoGridResult({
         </p>
       ) : null}
       {drawerState && drawerState?.id && (
-        <PhotoDetailDrawer item={drawerState} onCloseDrawer={onCloseDrawer} />
+        <PhotoDetailDrawer
+          onMaximize={() => console.warn("no event executed")}
+          item={drawerState}
+          onCloseDrawer={onCloseDrawer}
+        />
       )}
     </div>
   );
