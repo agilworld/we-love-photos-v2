@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
       "onnxruntime-node$": false,
       // Handle Node.js protocol imports
       "node:fs": "fs",
-      "node:path": "path", 
+      "node:path": "path",
       "node:util": "util",
       "node:stream": "stream",
       "node:http": "http",
@@ -55,7 +55,7 @@ const nextConfig: NextConfig = {
 };
 
 export default withSentryConfig(withNextIntl(nextConfig), {
-  org: "agilworld",
+  org: "qaki5-team",
   project: "we-love-photos-v2",
 
   // An auth token is required for uploading source maps.
